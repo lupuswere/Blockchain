@@ -79,7 +79,7 @@ $$k * A = B$$
 
 当点 $A$ 和点 $B$ 已知时，并不存在 $k = \dfrac{A}{B}$ 这样的公式可以直接计算出 $k$。
 
-**该特点是 ECDSA 算法族的核心。**
+**该特点是 ECDSA 算法族的核心。** 该问题被称作离散对数问题（Discrete logarithm problem），被认为是在某前技术下有指数时间复杂度甚至更高的问题，当所选取的质数很大时，当代计算机无法在有效时间内暴力破解。
 
 #### 对椭圆曲线的调整
 
@@ -165,6 +165,24 @@ $$s = k_{-1}(m + x * r) \mod{q}$$
 3. 计算 $u_1 = z * s^{-1}\mod{n}$ 和 $u_2 = r * s^{-1}\mod{n}$
 4. 计算一个点 $P (x_1, y_1) = u_1 * G + u_2 * Q_A$
 5. 如果 $r \equiv x_1\mod{n}$ 则验证通过
+
+### 攻击
+
+不仅私钥需要保持秘密，每次签名选定的随机数 $k$ 也必须保持秘密，且每次都需要用一个新的随机数。
+
+索尼的 PS3 使用的就是 ECDSA 算法，曾经因为 $k$ 不变而被破解。攻击者只需要生成两个不同文件的签名，就可以计算出 $k$。
+
+假设这两个文件的哈希值是 $z$, $z'$，签名中的 $s$ 是 $S$ 和 $S'$ 公式如下：
+
+$$
+\begin{aligned}
+S - S' &= k^{-1}(z + d_AR) - k^{-1}(z' + d_AR)\\
+&= k^{-1}(z + d_AR - z' - d_AR)\\
+&= k^{-1}(z - z')
+\end{aligned}
+$$
+
+所以 $k = \dfrac{(z - z')}{(S - S')}$。从而计算出私钥： $d_A = \dfrac{kS - z}{R}$
 
 ### 应用 - 以太坊 - secp256k1
 
@@ -339,7 +357,7 @@ VSS 并加入了验证机制，使得各方收到数据时可以验证数据分�
 
 * $p$ 是质数
 * $q|p - 1$
-* $g$ 是阶为 $q$ 的 $\mathbb{Z}_p$ 的模乘法的循环子群的生成元。模乘法的循环子群的生成元又称为原根，见：[参考链接](https://zh.m.wikipedia.org/zh-hans/%E5%8E%9F%E6%A0%B9)
+* $g$ 是阶为 $q$ 的 $\mathbb{Z}_p$ 的模乘法的循环子群的生成元。模乘法的循环群的生成元又称为原根，见：[参考链接](https://zh.m.wikipedia.org/zh-hans/%E5%8E%9F%E6%A0%B9)
 
 这里我们可以取满足以上条件的 $p$ 和 $g$ 为：
 * $p = 11$
@@ -377,11 +395,21 @@ $$g^y_2 = 3 ^ 3 = 27 \equiv 5\mod{11}$$
 
 ### MtA - Multiplicative to Additive 和 Paillier 算法
 
+#### Paillier 算法
+
 Paillier 算法是一个加法同态算法，加法同态算法满足性质：**密文相乘解密后等于明文相加**，即：
 
 $$D(E(m_1) * E(m_2)) = m_1 + m_2$$
 
-MtA - Multiplicative to Additive 思想可以利用 Paillier 算法将一个可以表示两个子秘密的乘积的秘密转化为另外两个子秘密之和。 
+此处暂不研究 Paillier 算法的细节。
+
+需要注意的是，Paillier 算法的安全性基于 N-residuosity decisional assumption，即N-残差决策假设，又称决策复合残差假设，该假设认为，给定一个合数 $n$，一个整数 $z$，很难判定是否存在一个 $y$ 满足以下条件：
+
+$$z \equiv y^n\mod{n^2}$$
+
+#### MtA - Multiplicative to Additive
+
+MtA - Multiplicative to Additive 思想可以利用 Paillier 算法将一个可以表示两个明文（需要保护的秘密）的乘积的秘密转化为另外两个秘密之和。 
 
 将 $S = a * b$ 转化为 $S = x + y$ 的算法：
 * A 用 Paillier 同态加密秘密 $a$，得到 $E_{pk}(a)$
@@ -429,7 +457,7 @@ $$
 
 其中：
 * 一个新的变量 $\gamma_i$ 被引入，每个参与者各自独立生成，并保密。
-* $g^{\sum\gamma_i} = g^\gamma_1 * g^\gamma_2 * ... * g^\gamma_i$ 每个部分就可以独立计算。
+* $g^{\sum\gamma_i} = g^{\gamma_1}g^{\gamma_2}...g^{\gamma_i}$ 每个部分就可以独立计算。
 * $k\gamma = (k_1 + k_2 + ... + k_i) * (\gamma_1 + \gamma_2 + ... + \gamma_i)$ 需要计算。
   * 这一项展开后会得到一个形式为 $k_i\gamma_j$ 的各项和。
   * 每一项 $k_i\gamma_j$ 可以在参与者 $i$ 和 $j$ 之间使用 MtA 方法展开为 $k_i\gamma_j = \alpha_{ij} + \beta_{ij}$
@@ -508,4 +536,94 @@ $$s_i = mk_i + r\sigma_i$$
 11. 最后每个参与者使用 $u_i * G$ 得到一个点并公布，这些点之和就是公钥，因为：
 
 $$u_1 * G + u_2 * G + ... + u_i * G = (u_1 + u_2 + ... + u_i) * G = d_A * G = Q_A$$
+
+### GG18 的细节
+
+上一节只是讨论了 GG18 的思路和步骤，下面过一遍它的细节，尤其是与安全和性能相关的细节。
+
+#### 特点
+
+要计算 $s$，需要将 $k$ 与 $x$ 相乘，但普通的秘密交换，例如 SSS，在 $t$ 次多项式侠，会造成至少需要 $2t + 1$ 个参与者。
+而别的解决方案，例如一些使用加法同态算法合作生成公钥然后加密私钥的方案，则有性能过于差的缺点。GG18 使用了 MtA 解决了密钥相乘的问题。
+
+#### Range Proof
+
+GG18 的出发点，是假设所有参与方都是诚实的，然后检验签名是否有效。GG18 由于不能保证签名是有效的，需要注意诚实的参与者在公布的信息中没有有价值的信息泄露，例如密钥。
+因此，GG18 采用了一种叫做**Range Proof**，"范围检验"，的方案，在签名公布前重建 $s_i$ 以保证其是有效的。
+
+GG18 需要检验：
+* 证明在 Paillier 算法交换 MtA 的过程中，参与方提供的某些值是足够小的。
+* 证明在 Paillier 算法交换 MtA 的过程中，参与方知道正确的 $k_i$。
+
+#### 假设前提
+
+GG18 有如下环境假设：
+* 网络支持广播和点对点两种沟通模型
+* 攻击者也是多项式时间，且可以控制 $t$ 个参与者
+* 攻击者在协议开始时确定控制了哪些参与者，中途不变更
+* 攻击者在每轮最后一个发言，即可以看到所有诚实参与者的信息
+* 不诚实的参与者数量可以占多数，最多达到 $n - 1$ 个。在这种情况下，签名可能无法完成。
+
+GG18 有如下数学假设：
+* 假如有一个质数阶循环群 $G$，生成元是 $g$，阶是 $q$，认为 $g^a, g^b, g^ab$ 和随机集合有计算不可区分性。
+* "强RSA"，即给定一个大质数 $N$，对手知道密文和 $e$，很难找到原明文 X： $x^e = s\mod{N}$
+
+#### MtAwc
+
+GG18 加强了原始的 MtA，称之为 MtAwc "MtA with check"。MtAwc 强制要求 B 必须使用正确的秘密 b。流程如下：
+
+* A 用同态加密秘密 $a$，得到 $c_1 = E_{pk}(a)$
+* A 发送 $c_1 = E_{pk}(a)$ 给 B
+* A 使用 Range proof 完成一个零知识证明： $a < q^3$
+* B 用 $b * c_1$ 加上自己生成的随机数 $m$，并加密，得到 $c_2 = E_{pk}(ab + m)$
+    * B 得到 $y = -m$
+* B 发送 $c_2$
+* B 完成一个零知识证明：$b < q^3$ 且 $m < q^7$
+* A 解密 $x = D(c_2)\mod{q}$
+
+注意 $N > q^8$， $m < N - ab$ 所以没有取过模。
+
+#### 通信
+
+(待补充)
+
+所有参与者需要广播：
+* Paillier加密公钥
+* 计算出的 $\delta_i$
+所有参与者需要点对点发送：
+* 与其他所有人的一次 MtA，为了计算 $k_i\gamma_j$
+* 与其他所有人的一次 MtAwc，为了计算 $k_iw_j$
+
+#### 攻击和漏洞
+
+GG18 的最初版本有一个关键漏洞，提案中没有对 Paillier 算法中的模 $N$ 做检验，尽管原版本已经声明 $N > q^7$，有的实现没有检查 $N$ 的大小，从而导致攻击者可以获取诚实参与者的信息，进而获取整个私钥。
+因此，在 GG18 在 2019 年发布了一个改进，要求所有 Paillier 算法中需要被加密的值都必须被检验到足够小。
+
+另外，GG18 的最初版本认为零知识的 Range Proof 可能是不需要的，但事实证明，没有该步骤，1个攻击者可以在16次签名内、或16个攻击者在1次签名内，获取整个私钥。
+
+攻击细节见[链接](https://velasblockchain.medium.com/velas-researchers-are-helping-to-develop-state-of-the-art-mpc-protocols-f2e87ba66db9)。
+
+### 开源库
+
+* https://github.com/ZenGo-X/multi-party-ecdsa GG18/GG20 (ZenGo)
+* https://github.com/bnb-chain/tss-lib GG18 (Binance)
+* https://github.com/ing-bank/threshold-signatures GG18 (ING)
+* https://gitlab.com/thorchain/tss/tss-lib GG20
+* https://github.com/commerceblock/multi-party-ecdsa GG18
+
+其他已知实现了 GG18/GG20 的公司：
+* Fireblocks
+* Paypal/Curv
+* Safeheron
+
+## 参考资料
+
+* https://eprint.iacr.org/2019/114.pdf
+* https://eprint.iacr.org/2020/540.pdf
+* https://eprint.iacr.org/2021/1621.pdf
+* https://info.fireblocks.com/hubfs/A_Note_on_the_Security_of_GG.pdf
+* https://www.instructables.com/Understanding-how-ECDSA-protects-your-data/
+* http://aandds.com/blog/multiparty-threshold-ecdsa.html
+* https://velasblockchain.medium.com/velas-researchers-are-helping-to-develop-state-of-the-art-mpc-protocols-f2e87ba66db9
+* https://blog.safeheron.com/blog/insights/safeheron-originals/warning-gg18-20-based-attack-towards-mpc-threshold-signature
 
