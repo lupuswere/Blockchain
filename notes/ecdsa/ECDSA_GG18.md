@@ -473,7 +473,7 @@ $$
 \begin{aligned}
 S &= f(0)\\
 &= L(0)\\
-&= f(1) * \product{\dfrac{(x_1 - x_i)}{(1 - i)}} + f(2) * \product{\dfrac{(x_2 - x_i)}{(2 - i)}} + ... + f(t) * \product{\dfrac{(x_{t+1} - x_i)}{(t + 1 - i)}}\\
+&= f(1) * \prod{\dfrac{(x_1 - x_i)}{(1 - i)}} + f(2) * \prod{\dfrac{(x_2 - x_i)}{(2 - i)}} + ... + f(t) * \prod{\dfrac{(x_{t+1} - x_i)}{(t + 1 - i)}}\\
 &= w_1 + w_2 + ... + w_{t + 1}
 \end{aligned}
 $$
@@ -500,7 +500,7 @@ $$s_i = mk_i + r\sigma_i$$
 
 4. 每个参与者 $i$ 使用上一步得到的 $x_i$ 通过拉格朗日多项式插值计算各自的 $w_i$。
 5. 每个参与者 $i$ 都与其他参与者 $j$ 两两配对一次，完成 $k_i$ 和 $\gamma_j$ 的 MtA 交换，得到各自的 $\alpha_{ij}$ 和 $\beta_{ij}$。
-6. 每个参与者 $i$ 都再次与其他参与者 $j$ 两两配对一次，完成 $k_i$ 和 $\w_j$ 的 MtA 交换，得到各自的 $\mu_{ij}$ 和 $\nu_{ij}$。
+6. 每个参与者 $i$ 都再次与其他参与者 $j$ 两两配对一次，完成 $k_i$ 和 $w_j$ 的 MtA 交换，得到各自的 $\mu_{ij}$ 和 $\nu_{ij}$。
 7. 每个参与者各自计算 $\delta_i$，并广播出去自己计算的 $delta_i$
 8. 每个参与者各自计算 $\sigma_i$
 9. 每个参与者根据所有参与者的 $delta$ 求和计算出 $k\gamma$
