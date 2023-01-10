@@ -576,7 +576,7 @@ GG18 有如下数学假设：
 
 #### MtAwc
 
-（待深化补充）
+（待补充）
 
 GG18 加强了原始的 MtA，称之为 MtAwc "MtA with check"。MtAwc 强制要求 B 必须使用正确的秘密 b。流程如下：
 
@@ -671,6 +671,26 @@ GG18 的最初版本有一个关键漏洞，提案中没有对 Paillier 算法�
 
 攻击细节见[链接](https://velasblockchain.medium.com/velas-researchers-are-helping-to-develop-state-of-the-art-mpc-protocols-f2e87ba66db9)。
 
+### 性能
+
+（待补充）
+
+除了论文本身对性能做了简单分析之外，也有一些其他组织实现了该协议并做了性能分析，例如[THORChain](https://medium.com/thorchain/thorchain-publish-tss-whitepapers-d3ea66913721)：
+
+![benchmark](./benchmark.webp)
+
+算法性能受到如下因素影响：
+* 通信
+  * 网络通信的次数，包括：
+    * 广播
+    * 点对点通信
+  * 通信的内容大小。
+* 计算
+  * 哈希（承诺）算法的复杂度，例如 SHA-1, SHA-256。
+  * 加密算法的复杂度，例如 Paillier。
+  * 基本计算的复杂度，包括大整数乘法、取模、椭圆曲线的计算等。
+* 空间占用
+
 ### 开源库
 
 * https://github.com/ZenGo-X/multi-party-ecdsa GG18/GG20 (ZenGo)
@@ -686,7 +706,7 @@ GG18 的最初版本有一个关键漏洞，提案中没有对 Paillier 算法�
 
 ### 其他类似方案
 
-（待研究补充）
+（待补充）
 
 * ["CCL+20" Guilhem Castagnos, Dario Catalano, Fabien Laguillaumie, Federico Savasta, Ida Tucker: Bandwidth-Efficient
   Threshold EC-DSA. Public Key Cryptography (2) 2020: 266-296](https://eprint.iacr.org/2020/084.pdf)
