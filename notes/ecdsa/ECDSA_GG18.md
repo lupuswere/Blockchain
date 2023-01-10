@@ -684,6 +684,31 @@ GG18 的最初版本有一个关键漏洞，提案中没有对 Paillier 算法�
 * Paypal/Curv
 * Safeheron
 
+### 其他类似方案
+
+（待研究补充）
+
+* ["CCL+20" Guilhem Castagnos, Dario Catalano, Fabien Laguillaumie, Federico Savasta, Ida Tucker: Bandwidth-Efficient
+  Threshold EC-DSA. Public Key Cryptography (2) 2020: 266-296](https://eprint.iacr.org/2020/084.pdf)
+* ["CDH+18" Koji Chida, Daniel Genkin, Koki Hamada, Dai Ikarashi, Ryo Kikuchi, Yehuda Lindell, Ariel Nof: Fast Large-Scale
+Honest-Majority MPC for Malicious Adversaries. CRYPTO (3) 2018: 34-64](https://link.springer.com/content/pdf/10.1007/978-3-319-96878-0.pdf?pdf=button)
+* ["CMP20" Ran Canetti, Nikolaos Makriyannis, Udi Peled: UC Non-Interactive, Proactive, Threshold ECDSA. IACR Cryptol. ePrint
+  Arch. 2020: 492 (2020)](https://eprint.iacr.org/2020/492.pdf)
+* ["DJN+20" Ivan Damgård, Thomas Pelle Jakobsen, Jesper Buus Nielsen, Jakob Illeborg Pagter, Michael Bæksvang Østergård:
+  Fast Threshold ECDSA with Honest Majority. IACR Cryptol. ePrint Arch. 2020: 501 (2020)](https://eprint.iacr.org/2020/501.pdf)
+* ["DKLs19" Jack Doerner, Yashvanth Kondi, Eysa Lee, Abhi Shelat: Threshold ECDSA from ECDSA Assumptions: The Multiparty
+Case. IEEE Symposium on Security and Privacy 2019: 1051-1066](https://eprint.iacr.org/2019/523.pdf)
+* ["DKO+19" Anders P. K. Dalskov, Marcel Keller, Claudio Orlandi, Kris Shrishak, Haya Shulman: Securing DNSSEC Keys via
+Threshold ECDSA From Generic MPC. IACR Cryptol. ePrint Arch. 2019: 889 (2019)](https://eprint.iacr.org/2019/889.pdf)
+* ["GG20" Rosario Gennaro, Steven Goldfeder: One Round Threshold ECDSA with Identifiable Abort. IACR Cryptol. ePrint Arch.
+2020: 540 (2020)](https://eprint.iacr.org/2020/540.pdf)
+* ["GJKR96" Rosario Gennaro, Stanislaw Jarecki, Hugo Krawczyk, Tal Rabin: Robust Threshold DSS Signatures. EUROCRYPT
+  1996: 354-371](https://link.springer.com/content/pdf/10.1007/3-540-68339-9_31.pdf?pdf=inline%20link)
+* ["GKSS20" Adam Gagol, Jedrzej Kula, Damian Straszak, Michal Swietek: Threshold ECDSA for Decentralized Asset Custody. IACR Cryptol.
+  ePrint Arch. 2020: 498 (2020)](https://eprint.iacr.org/2020/498.pdf)
+* ["LN18" Yehuda Lindell, Ariel Nof: Fast Secure Multiparty ECDSA with Practical Distributed Key Generation and Applications to
+Cryptocurrency Custody. ACM Conference on Computer and Communications Security 2018: 1837-1854](https://eprint.iacr.org/2018/987.pdf)
+
 ## 参考资料
 
 * https://eprint.iacr.org/2019/114.pdf
