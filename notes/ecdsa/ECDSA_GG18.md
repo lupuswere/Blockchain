@@ -1,4 +1,4 @@
-# ECDSA MPC - GG18/GG20
+# ECDSA MPC - GG18/GG20 协议
 
 ## ECDSA
 
@@ -75,11 +75,17 @@ $k * A = A + A + A + ... + A = (k - 1) * A + A$
 
 由于没有所谓的椭圆曲线点减法或者除法，除了枚举，椭圆曲线点乘法的结果无法倒推。也就是说，给定以下计算
 
-$$k * A = B$$
+$$kA = B$$
 
 当点 $A$ 和点 $B$ 已知时，并不存在 $k = \dfrac{A}{B}$ 这样的公式可以直接计算出 $k$。
 
-**该特点是 ECDSA 算法族的核心。** 该问题被称作离散对数问题（Discrete logarithm problem），被认为是在某前技术下有指数时间复杂度甚至更高的问题，当所选取的质数很大时，当代计算机无法在有效时间内暴力破解。
+**该特点是 ECDSA 算法族的核心。** 
+
+该问题被称作离散对数问题（Discrete logarithm problem），因为往往也被记作：
+
+$$A^k \equiv B\mod{p}$$
+
+被认为是在目前技术下有指数时间复杂度甚至更高的问题，当所选取的质数很大时，当代计算机无法在有效时间内暴力破解。
 
 #### 对椭圆曲线的调整
 
@@ -302,7 +308,7 @@ $$S = a_0 = 3$$
 
 接下来我们准备做一个 $(3, 5)$ SSS，取值如下：
 
-$$q = 3$$
+$$q = 5$$
 
 $$a_1 = 1$$
 
@@ -395,21 +401,21 @@ $$g^y_2 = 3 ^ 3 = 27 \equiv 5\mod{11}$$
 
 ### MtA - Multiplicative to Additive 和 Paillier 算法
 
-#### Paillier 算法
+#### Paillier 协议
 
-Paillier 算法是一个加法同态算法，加法同态算法满足性质：**密文相乘解密后等于明文相加**，即：
+Paillier 协议是一个加法同态算法，加法同态算法满足性质：**密文相乘解密后等于明文相加**，即：
 
 $$D(E(m_1) * E(m_2)) = m_1 + m_2$$
 
-此处暂不研究 Paillier 算法的细节。
+此处暂不研究 Paillier 协议的细节。
 
-需要注意的是，Paillier 算法的安全性基于 N-residuosity decisional assumption，即N-残差决策假设，又称决策复合残差假设，该假设认为，给定一个合数 $n$，一个整数 $z$，很难判定是否存在一个 $y$ 满足以下条件：
+需要注意的是，Paillier 协议的安全性基于 N-residuosity decisional assumption，即N-残差决策假设，又称决策复合残差假设，该假设认为，给定一个合数 $n$，一个整数 $z$，很难判定是否存在一个 $y$ 满足以下条件：
 
 $$z \equiv y^n\mod{n^2}$$
 
 #### MtA - Multiplicative to Additive
 
-MtA - Multiplicative to Additive 思想可以利用 Paillier 算法将一个可以表示两个明文（需要保护的秘密）的乘积的秘密转化为另外两个秘密之和。 
+MtA - Multiplicative to Additive 思想可以利用 Paillier 协议将一个可以表示两个明文（需要保护的秘密）的乘积的秘密转化为另外两个秘密之和。 
 
 将 $S = a * b$ 转化为 $S = x + y$ 的算法：
 * A 用 Paillier 同态加密秘密 $a$，得到 $E_{pk}(a)$
@@ -422,9 +428,9 @@ $$ab = x + y\mod{q}$$
 
 $$x + y = (ab + m) - m = a * b = S$$
 
-### GG18
+### GG18 协议
 
-Rosario Gennaro 和 Steven Goldfeder 在 2018 年发表了文章 [Fast Multiparty Threshold ECDSA with Fast Trustless Setup](https://eprint.iacr.org/2019/114.pdf)，提出了一种改进的分布式 MP ECDSA 签名算法，往往也被称为"GG18"。
+Rosario Gennaro 和 Steven Goldfeder 在 2018 年发表了文章 [Fast Multiparty Threshold ECDSA with Fast Trustless Setup](https://eprint.iacr.org/2019/114.pdf)，提出了一种改进的分布式 MP ECDSA 签名协议，往往也被称为"GG18"。
 后来又在 2020 年发表文章 [One Round Threshold ECDSA with Identifiable Abort](https://eprint.iacr.org/2020/540.pdf) 提出了一种改进，称为"GG20"。
 
 GG18/GG20 现在已经逐渐流行成为 TSS ECDSA/ECC 的方案。
@@ -570,6 +576,8 @@ GG18 有如下数学假设：
 
 #### MtAwc
 
+（待深化补充）
+
 GG18 加强了原始的 MtA，称之为 MtAwc "MtA with check"。MtAwc 强制要求 B 必须使用正确的秘密 b。流程如下：
 
 * A 用同态加密秘密 $a$，得到 $c_1 = E_{pk}(a)$
@@ -583,16 +591,76 @@ GG18 加强了原始的 MtA，称之为 MtAwc "MtA with check"。MtAwc 强制要
 
 注意 $N > q^8$， $m < N - ab$ 所以没有取过模。
 
-#### 通信
+#### Schnorr 协议
 
-(待补充)
+（待补充）
 
-所有参与者需要广播：
-* Paillier加密公钥
-* 计算出的 $\delta_i$
-所有参与者需要点对点发送：
-* 与其他所有人的一次 MtA，为了计算 $k_i\gamma_j$
-* 与其他所有人的一次 MtAwc，为了计算 $k_iw_j$
+该协议是为了 ZK （零知识证明）而设计。
+
+#### Diffie Hellman 算法
+
+该算法为了在不安全的环境中交换密钥而设计。
+
+* A 选择一个质数 $p$，和它的一个原根 $g$（定义见上文），一个随机数 $a$，计算一个数 $A = g^a\mod{p}$。
+* A 把 $p, g, A$ 发送给 B
+* B 选择一个随机数 $b$，计算 $B = g^b\mod{p}$ 和 $s = A^b\mod{p}$
+* B 把 $B$ 发送给 A，A 计算 $s = B^a\mod{p}$ 答案与 B 计算出的 $s$ 相同
+
+$s$ 就是计算出的密钥，而网络上传输的 $p, g, A, B$ 四个数无法算出 $s$。
+
+#### 步骤
+
+前文我们讨论了 GG18 的大致思路，现在根据其论文原文重新整理一遍过程，并标注其中涉及的：
+* 广播
+* 点对点通信
+* 零知识证明
+
+##### KeyGen
+
+1. 每个参与者选择一个密钥 $u_i$，计算出 $\g^{u_i}$ 的承诺。
+   * 广播：Paillier加密公钥， $\g^{u_i}$ 的承诺。
+2. 广播： $\g^{u_i}$ 的原值。
+3. 所有参与者完成一次 Feldman VSS，得到各自的 $x_i$。
+4. 每个参与者完成两次**零知识证明**：
+   * 用 Schnorr 协议证明参与者知道 $x_i$
+   * 使用[该方案](https://cseweb.ucsd.edu/~daniele/papers/GMR.pdf)证明参与者为 Paillier 协议生成的 $N_i = p_iq_i$ 没有平方因数。
+
+##### Sig
+
+1. 每个参与者使用拉格朗日多项式插值法计算出 $w_i$。
+2. 每个参与者选择一个 $k_i$ 和 $\gamma_i$，计算 $g^{\gamma_i}$ 。
+   * 广播： $g^{gamma_i}$ 的承诺。
+3. 每个参与者**点对点**两两配对完成一次 MtA，将 $k_i\gamma_j$ 转化为 $\alpha_{ij} + \beta_{ij}$。
+4. 每个参与者计算 $\delta_i$
+5. 每个参与者**点对点**两两配对完成一次 MtAwc，将 $k_iw_j$ 转化为 $\mu_{ij} + \nu_{ij}$。
+6. 每个参与者计算 $\sigma_i$
+7. 广播： $\delta_i$
+8. 每个参与者计算 $\delta = k\gamma$，并计算 $\delta^{-1}\mod{q}$
+9. 广播： $\g^{gamma_i}$ 的原值
+   * **零知识证明**：使用 Schnorr 协议证明参与者知道正确的 $\gamma_i$
+10. 每个参与者计算 $R = g^{k^{-1}}$ 
+11. 每个参与者计算 $s_i = mk_i + r\sigma_i$。
+
+到这一步为止，所需信息都已经被计算，但注意：由于有对手的存在， $s_i$ 可能是错误的，从而导致签名失败，同时对手可以获取其他人正确的 $s$。
+
+因此，需要在重建 $s = \sum{s_i}$ 之前，验证每个人的输出：
+* 用一个随机数 $g^{l_i}$ 与 $R^{s_i}$ 相乘，达到保护 $s_i$ 的效果： $V_i = R^{s_i}g{l_i}$
+* 把 $V_i$ 相乘得到 $g^l$ 但是 $g^{l_i}$ 也不能公布，这样上面的保护效果就无用了，因此需要所有人生成另一个随机数 $\rho_i$ 并通过 Diffie-Hellman 算法使得 $g^{lp}$ 可以被计算。
+* 如果这一步中的任意验证失败，签名失败并终止，而诚实参与者的 $s_i$ 此时尚未公布。
+
+12. 每个参与者生成两个随机数 $l_i, \rho_i$，计算 $V_i = R^{s_i}g{l_i}, A_i = g^{\rho_i}$
+13. 广播： $V_i, A_i$ 的承诺
+14. 广播： $V_i, A_i$ 的原值并进行两个**零知识证明**：
+    * 证明参与者知道正确的 $s_i, l_i, \rho_i$ 使得 $A_i = {\rho_i}$ 正确。使用 Schnorr 算法。
+    * 证明参与者知道正确的 $s_i, l_i, \rho_i$ 使得 $V_i^{\rho_i}$ 正确。步骤如下：
+      1. 证明方选择两个随机数 $a, b$，计算并发送 $\alpha = R^ag^b$
+      2. 验证方发送随机数 $c$
+      3. 证明方计算并发送： $t = a + cs\mod{q}$ 和 $u = b + cl\mod{q}
+      4. 验证方检验 $R^tg^u = \alphaV^c$
+15. **若上一步零知识证明失败，协议终止。**
+16. 每个参与者计算 $U_i = V^{\rho_i}, T_i = A^{l_i}$ ，发送 $U_i, T_i$ 的承诺
+17. 每个参与者发送上一步的原值，**若 $\prod{T_i}$ 与 $\prod{U_i}$ 不相等，协议终止**。
+18. 广播： $s_i$
 
 #### 攻击和漏洞
 
